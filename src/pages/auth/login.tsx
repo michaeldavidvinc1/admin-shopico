@@ -8,12 +8,20 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from 'lucide-react';
+import { useLoginMutation } from "@/services/auth.service";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { toast } from "sonner";
+import { ROUTES } from "@/constant";
 
 const Login = () => {
 
+    const [login, { isLoading}] = useLoginMutation();
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    // const user = useSelector((state: RootState) => state.auth);
+
+    // console.log(user)
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -22,6 +30,18 @@ const Login = () => {
             password: ""
         }
     })
+
+    const handleSubmit = async (values: z.infer<typeof LoginSchema>) => {
+        try {
+            const res = await login(values).unwrap();
+            if(res.success){
+                navigate(ROUTES.DASHBOARD);
+            }
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error.data.msg)
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -34,10 +54,10 @@ const Login = () => {
                     </p>
                 </div>
 
-                {/*onSubmit={form.handleSubmit(onSubmit)}*/}
+                
                 {/* Form */}
                 <Form {...form}>
-                    <form className="mt-8 space-y-6" >
+                    <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(handleSubmit)} >
                         <div className="space-y-4">
                             {/* Email Input */}
                             <FormField control={form.control} name="email" render={({ field }) => (
