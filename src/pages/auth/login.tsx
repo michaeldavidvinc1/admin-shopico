@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from 'lucide-react';
 import { useLoginMutation } from "@/services/auth.service";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
 import { toast } from "sonner";
 import { ROUTES } from "@/constant";
 
@@ -19,10 +17,6 @@ const Login = () => {
     const [login, { isLoading}] = useLoginMutation();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    // const user = useSelector((state: RootState) => state.auth);
-
-    // console.log(user)
-
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
