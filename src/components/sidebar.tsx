@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, ChevronDown } from "lucide-react";
+import { LayoutDashboard, ChevronDown, LayoutList } from "lucide-react";
 import { ROUTES } from "@/constant";
 
 interface MenuItem {
@@ -19,10 +19,10 @@ const Menu: MenuItem[] = [
         icon: <LayoutDashboard className="w-5" />,
     },
     {
-        id: "test",
-        label: "Test",
-        path: ROUTES.TEST,
-        icon: <LayoutDashboard className="w-5" />,
+        id: "category",
+        label: "Category",
+        path: ROUTES.CATEGORY,
+        icon: <LayoutList className="w-5" />,
     },
 ];
 
