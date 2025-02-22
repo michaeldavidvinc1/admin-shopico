@@ -5,17 +5,22 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { ROUTES } from '@/constant';
 import { CreateCategorySchema } from '@/schema';
-import { useCreateCategoryMutation } from '@/services/category.service';
+import { useGetSingleCategoryQuery, useUpdateProductMutation } from '@/services/category.service';
 import { generateSlug } from '@/utils/slugify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 const UpdateCategory = () => {
+    const {slug} = useParams();
     const navigate = useNavigate();
+
+    const { data: dataCategory, isLoading: loadDataCategory } = useGetSingleCategoryQuery(slug as string, { skip: !slug });
+    const [updateCategory, {isLoading: loadingUpdateCategory}] = useUpdateProductMutation();
+
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const breadcrumbItems = [
@@ -23,9 +28,7 @@ const UpdateCategory = () => {
         { label: "Category", href: ROUTES.CATEGORY },
         { label: "Update" }
     ];
-
     type FormData = z.infer<typeof CreateCategorySchema>;
-
     const form = useForm<FormData>({
         resolver: zodResolver(CreateCategorySchema),
         defaultValues: {
@@ -35,7 +38,18 @@ const UpdateCategory = () => {
         },
     });
 
-    const [createCategory, {isLoading: loadingCreateCategory}] = useCreateCategoryMutation();
+    useEffect(() => {
+        if (dataCategory?.data) {
+            const category = dataCategory.data;
+            form.setValue("name", category.name);
+            form.setValue("slug", category.slug);
+            if (category.image?.url) {
+                setUploadedImages((prevImages) => [...prevImages, category.image.url]);
+            }
+        }
+    }, [dataCategory, slug]);
+    
+
 
     const nameValue = form.watch("name");
     useEffect(() => {
@@ -63,10 +77,16 @@ const UpdateCategory = () => {
         
         if (uploadedFiles.length > 0) {
             formData.append("image", uploadedFiles[0]); 
+        } else {
+            formData.append("deleteImage", 'true'); 
         }
+
         try {
-            const res = await createCategory(formData).unwrap();
+            if (!slug) return;
+            console.log("Submitting:", Object.fromEntries(formData.entries()));
+            const res = await updateCategory({payload: formData, slug}).unwrap();
             if (res.success) {
+                toast.success(res.message)
                 navigate(ROUTES.CATEGORY)
             }
         } catch (error: unknown) {
@@ -81,11 +101,17 @@ const UpdateCategory = () => {
         }
     }
 
+    if(loadDataCategory){
+        return (
+            <h1>Loading</h1>
+        )
+    }
+
     return (
         <div className="space-y-6 flex flex-col">
             <div className="space-y-1">
                 <div className="flex flex-col gap-4">
-                    <h1 className="text-3xl font-bold tracking-tight">Create Category</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Update Category</h1>
                     <DynamicBreadcrumb items={breadcrumbItems} />
                 </div>
             </div>
@@ -135,9 +161,16 @@ const UpdateCategory = () => {
                                 />
                             </div>
                         </div>
-                        <Button type='submit' disabled={loadingCreateCategory}>
-                            Submit
-                        </Button>
+                        <div className='flex gap-2'>
+                            <Button type='button' variant="ghost">
+                                <Link to={ROUTES.CATEGORY}>
+                                    Cancel
+                                </Link>
+                            </Button>
+                            <Button type='submit' disabled={loadingUpdateCategory}>
+                                Submit
+                            </Button>
+                        </div>
                     </form>
                 </Form>
             </div>

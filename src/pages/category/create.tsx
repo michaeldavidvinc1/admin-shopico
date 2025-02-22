@@ -67,6 +67,7 @@ const CreateCategory = () => {
         try {
             const res = await createCategory(formData).unwrap();
             if (res.success) {
+                toast.success(res.message)
                 navigate(ROUTES.CATEGORY)
             }
         } catch (error: unknown) {

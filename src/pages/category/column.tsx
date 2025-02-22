@@ -1,14 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, MoreHorizontal, Trash2} from "lucide-react";
-import {Category} from "@/interface";
+import { ArrowUpDown, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Category } from "@/interface";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem, DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constant";
 
 export const columns: ColumnDef<Category>[] = [
     {
@@ -45,11 +47,11 @@ export const columns: ColumnDef<Category>[] = [
         },
         cell: ({ row }: { row: Row<Category> }) => {
             const name = row.getValue<string>("name");
-            const image = row.original.image.url;
+            const image = row.original.image?.url || "image/category-default.png"; 
 
             return (
                 <div className="flex items-center space-x-2">
-                    {image && <img src={image} alt={name} className="w-10 h-10 rounded-md object-cover" />}
+                    <img src={image} alt={name} className="w-10 h-10 rounded-md object-cover" />
                     <span>{name}</span>
                 </div>
             );
@@ -67,12 +69,13 @@ export const columns: ColumnDef<Category>[] = [
     {
         id: "actions",
         cell: ({ row }: { row: Row<Category> }) => {
-            // const dataRow = row.original;
+            const navigate = useNavigate();
+            const dataRow = row.original;
             // const [deleteProduct, { isLoading: loadingDeleteProduct }] = useDeleteProductMutation();
             // const { refetch: refetchProducts } = useGetAllProductByStoreQuery(dataRow.storeId);
 
-            const handleEdit = () => {
-                console.log("edit")
+            const handleEdit = (slug: string) => {
+                navigate(ROUTES.UPDATE_CATEGORY(slug))
             }
 
             const handleDelete = () => {
@@ -108,7 +111,7 @@ export const columns: ColumnDef<Category>[] = [
                         <DropdownMenuItem>
                             <span
                                 className=" flex gap-2 items-center cursor-pointer"
-                                onClick={() => handleEdit()}
+                                onClick={() => handleEdit(dataRow.slug)}
                             >
                                 <Edit className="w-4" /> Edit
                             </span>

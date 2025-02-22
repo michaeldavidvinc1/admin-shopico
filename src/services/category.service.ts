@@ -17,11 +17,28 @@ export const categoryApi = apiSlice.injectEndpoints({
                 method: "GET",
             }),
             providesTags: ['Category']
-        })
+        }),
+        getSingleCategory: builder.query({
+            query: (slug: string) => ({
+                url: API_URL.GET_SINGLE_CATEGORY(slug),
+                method: "GET",
+            }),
+            providesTags: ['Category']
+        }),
+        updateProduct: builder.mutation({
+            query: ({payload, slug} : { payload: FormData; slug: string }) => ({
+                url: API_URL.UPDATE_CATEGORY(slug),
+                method: "PUT",
+                body: payload
+             }),
+             invalidatesTags: ['Category']
+        }),
     })
 });
 
 export const {
     useCreateCategoryMutation,
     useGetAllCategoryQuery,
+    useGetSingleCategoryQuery,
+    useUpdateProductMutation
 } = categoryApi
