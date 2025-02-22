@@ -5,6 +5,7 @@ import GuardRoute from "@/components/guard-route";
 import DashboardPage from "@/pages/dashboard";
 import { ROUTES } from "@/constant";
 import CategoryPage from "@/pages/category";
+import CategoryRoute from "./category";
 
 export default function AppRoutes() {
 
@@ -25,7 +26,7 @@ export default function AppRoutes() {
                 }
             >
                 <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-                <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
+                <Route path="/category/*" element={<CategoryRoute />} />
             </Route>
         </Routes>
     )

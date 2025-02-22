@@ -2,6 +2,7 @@ export const ROUTES = {
     LOGIN: "/login",
     DASHBOARD: "/",
     CATEGORY: "/category",
+    CREATE_CATEGORY: "/category/create"
 }
 
 export const API_URL = {

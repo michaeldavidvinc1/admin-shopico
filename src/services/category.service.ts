@@ -8,13 +8,15 @@ export const categoryApi = apiSlice.injectEndpoints({
                 url: API_URL.CATEGORY_CREATE,
                 method: "POST",
                 body: payload
-            })
+            }),
+            invalidatesTags: ['Category']
         }),
         getAllCategory: builder.query({
             query: () => ({
                 url: API_URL.GET_ALL_CATEGORY,
                 method: "GET",
-            })
+            }),
+            providesTags: ['Category']
         })
     })
 });

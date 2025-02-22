@@ -6,6 +6,8 @@ import {useGetAllCategoryQuery} from "@/services/category.service.ts";
 import {Card, CardContent} from "@/components/ui/card.tsx";
 import Datatable from "@/components/datatable.tsx";
 import {columns} from "@/pages/category/column.tsx";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 
 const CategoryPage = () => {
@@ -14,7 +16,6 @@ const CategoryPage = () => {
         {label: "Category"},
     ];
     const {data: dataCategory, isLoading: getCategoryLoading} = useGetAllCategoryQuery({})
-    console.log(dataCategory)
     // <span className="text-muted-foreground">({
     //     <ProductCount storeSlug={storeSlug}/>})</span
     return (
@@ -52,11 +53,11 @@ const CategoryPage = () => {
                     </Select>
                 </div>
                 <div className="flex gap-4 items-center">
-                    <Input placeholder="Search product"/>
+                    <Input placeholder="Search category"/>
                     <button className="bg-primary text-white px-2 py-2 rounded-full">
-                        {/*<Link href={ROUTES.CREATE_PRODUCT_SELLER(storeSlug)} >*/}
-                        {/*    <Plus className="w-4 h-4" />*/}
-                        {/*</Link>*/}
+                        <Link to={ROUTES.CREATE_CATEGORY} >
+                            <Plus className="w-4 h-4" />
+                        </Link>
                     </button>
                 </div>
             </div>
@@ -64,7 +65,6 @@ const CategoryPage = () => {
                 <CardContent className="pt-6">
                     {getCategoryLoading ? (
                         <h1>Loading</h1>
-                        // <TableSkeleton rows={5} />
                     ) : (
                         <Datatable columns={columns} data={dataCategory?.data?.data} />
                     )}
