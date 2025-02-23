@@ -12,10 +12,13 @@ export const categoryApi = apiSlice.injectEndpoints({
             invalidatesTags: ['Category']
         }),
         getAllCategory: builder.query({
-            query: () => ({
-                url: API_URL.GET_ALL_CATEGORY,
-                method: "GET",
-            }),
+            query: (params = {}) => {
+                const queryString = new URLSearchParams(params).toString();
+                return {
+                    url: `${API_URL.GET_ALL_CATEGORY}${queryString ? `?${queryString}` : ''}`,
+                    method: "GET",
+                };
+            },
             providesTags: ['Category']
         }),
         getSingleCategory: builder.query({
