@@ -168,7 +168,7 @@ const UpdateCategory = () => {
                                 </Link>
                             </Button>
                             <Button type='submit' disabled={loadingUpdateCategory}>
-                                Submit
+                                Update
                             </Button>
                         </div>
                     </form>

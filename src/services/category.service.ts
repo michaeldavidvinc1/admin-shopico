@@ -33,6 +33,20 @@ export const categoryApi = apiSlice.injectEndpoints({
              }),
              invalidatesTags: ['Category']
         }),
+        deleteCategory: builder.mutation({
+            query: (slug: string) => ({
+                url: API_URL.DELETE_CATEGORY(slug),
+                method: "DELETE",
+            }),
+            invalidatesTags: ['Category']
+        }),
+        changeStatusCategory: builder.mutation({
+            query: (slug: string) => ({
+                url: API_URL.CHANGE_STATUS_CATEGORY(slug),
+                method: "PATCH",
+            }),
+            invalidatesTags: ['Category']
+        }),
     })
 });
 
@@ -40,5 +54,7 @@ export const {
     useCreateCategoryMutation,
     useGetAllCategoryQuery,
     useGetSingleCategoryQuery,
-    useUpdateProductMutation
+    useUpdateProductMutation,
+    useDeleteCategoryMutation,
+    useChangeStatusCategoryMutation
 } = categoryApi

@@ -10,7 +10,7 @@ import { generateSlug } from '@/utils/slugify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -35,7 +35,7 @@ const CreateCategory = () => {
         },
     });
 
-    const [createCategory, {isLoading: loadingCreateCategory}] = useCreateCategoryMutation();
+    const [createCategory, { isLoading: loadingCreateCategory }] = useCreateCategoryMutation();
 
     const nameValue = form.watch("name");
     useEffect(() => {
@@ -43,7 +43,7 @@ const CreateCategory = () => {
     }, [nameValue]);
 
     const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]; 
+        const file = e.target.files?.[0];
         if (!file) return;
         const imageUrl = URL.createObjectURL(file);
 
@@ -60,9 +60,9 @@ const CreateCategory = () => {
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("slug", values.slug);
-        
+
         if (uploadedFiles.length > 0) {
-            formData.append("image", uploadedFiles[0]); 
+            formData.append("image", uploadedFiles[0]);
         }
         try {
             const res = await createCategory(formData).unwrap();
@@ -136,9 +136,16 @@ const CreateCategory = () => {
                                 />
                             </div>
                         </div>
-                        <Button type='submit' disabled={loadingCreateCategory}>
-                            Submit
-                        </Button>
+                        <div className='flex gap-2'>
+                            <Button type='button' variant="ghost">
+                                <Link to={ROUTES.CATEGORY}>
+                                    Cancel
+                                </Link>
+                            </Button>
+                            <Button type='submit' disabled={loadingCreateCategory}>
+                                Submit
+                            </Button>
+                        </div>
                     </form>
                 </Form>
             </div>

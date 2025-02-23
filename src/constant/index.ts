@@ -14,6 +14,5 @@ export const API_URL = {
     GET_SINGLE_CATEGORY: (slug: string) =>  `/admin/category/${slug}`,
     UPDATE_CATEGORY: (slug: string) =>  `/admin/category/${slug}`,
     DELETE_CATEGORY: (slug: string) =>  `/admin/category/${slug}/forceDelete`,
-    DEACTIVATED_CATEGORY: (slug: string) =>  `/admin/category/${slug}/softDelete`,
-    ACTIVATED_CATEGORY: (slug: string) =>  `/admin/category/${slug}/activated`,
+    CHANGE_STATUS_CATEGORY: (slug: string) =>  `/admin/category/${slug}/change-status`,
 }

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowUpDown, Ban, Check, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { Category } from "@/interface";
 import {
     DropdownMenu,
@@ -9,8 +9,11 @@ import {
     DropdownMenuItem, DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constant";
+import { useChangeStatusCategoryMutation, useDeleteCategoryMutation } from "@/services/category.service";
+import Swal from "sweetalert2"
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Category>[] = [
     {
@@ -47,7 +50,7 @@ export const columns: ColumnDef<Category>[] = [
         },
         cell: ({ row }: { row: Row<Category> }) => {
             const name = row.getValue<string>("name");
-            const image = row.original.image?.url || "image/category-default.png"; 
+            const image = row.original.image?.url || "image/category-default.png";
 
             return (
                 <div className="flex items-center space-x-2">
@@ -71,32 +74,51 @@ export const columns: ColumnDef<Category>[] = [
         cell: ({ row }: { row: Row<Category> }) => {
             const navigate = useNavigate();
             const dataRow = row.original;
-            // const [deleteProduct, { isLoading: loadingDeleteProduct }] = useDeleteProductMutation();
-            // const { refetch: refetchProducts } = useGetAllProductByStoreQuery(dataRow.storeId);
+            const [deleteCategory] = useDeleteCategoryMutation();
+            const [changeStatusCategory] = useChangeStatusCategoryMutation();
 
             const handleEdit = (slug: string) => {
                 navigate(ROUTES.UPDATE_CATEGORY(slug))
             }
 
-            const handleDelete = () => {
-                console.log("delete")
-                // Swal.fire({
-                //     title: "Are you sure?",
-                //     text: "You cannot undo this data again!",
-                //     icon: "warning",
-                //     showCancelButton: true,
-                //     confirmButtonColor: "#3085d6",
-                //     cancelButtonColor: "#d33",
-                //     confirmButtonText: "Iya, Hapus",
-                //     cancelButtonText: "Batal",
-                // }).then(async (result) => {
-                //     if (result.isConfirmed) {
-                //         const res = await deleteProduct(id).unwrap();
-                //         if (res.success) {
-                //             console.log("sukses")
-                //         }
-                //     }
-                // });
+            const handleDelete = (slug: string) => {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You cannot undo this data again!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete",
+                    cancelButtonText: "Cancel",
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const res = await deleteCategory(slug).unwrap();
+                        if (res.success) {
+                            toast.success(res.message);
+                        }
+                    }
+                });
+            };
+
+            const changeStatus = (slug: string) => {
+                Swal.fire({
+                    title: "Change status this data?",
+                    // text: "You cannot undo this data again!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "Cancel",
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const res = await changeStatusCategory(slug).unwrap();
+                        if (res.success) {
+                            toast.success(res.message);
+                        }
+                    }
+                });
             };
             return (
                 <DropdownMenu>
@@ -109,6 +131,13 @@ export const columns: ColumnDef<Category>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>
+                            <span className={`flex gap-2 items-center cursor-pointer ${dataRow.status === 'ACTIVE' ? 'text-red-500' : 'text-green-500'}`}
+                            onClick={() => changeStatus(dataRow.slug)}>
+                                {dataRow.status === 'ACTIVE' ? <Ban className="w-4" /> : <Check className="w-4" />}
+                                {dataRow.status === 'ACTIVE' ? 'Deactivated' : 'Activated'}
+                            </span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
                             <span
                                 className=" flex gap-2 items-center cursor-pointer"
                                 onClick={() => handleEdit(dataRow.slug)}
@@ -119,7 +148,7 @@ export const columns: ColumnDef<Category>[] = [
                         <DropdownMenuItem>
                             <span
                                 className=" flex gap-2 items-center cursor-pointer text-red-500"
-                                onClick={() => handleDelete()}
+                                onClick={() => handleDelete(dataRow.slug)}
                             >
                                 <Trash2 className="w-4" /> Delete
                             </span>
